@@ -1,0 +1,86 @@
+% !TEX program = xelatex
+% =====================================================================
+%  持续状态语言模型：固定大小状态能否承载跨上下文信息？
+%  （初稿；按《论文大纲-A.md》+《论文大纲-A-第1-3章详细说明-10.9修正.md》结构，
+%    数字来自 BSKD 实验包，其中已按 BSKD-修复/说明.md 订正过三处口径）
+%
+%  编译：xelatex main → bibtex main → xelatex main ×2   （见 如何编译.md）
+% =====================================================================
+\documentclass[11pt,a4paper]{ctexart}
+
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=green!45!black,
+            urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\usepackage{placeins}   % FloatBarrier：把浮动体锁在本节内，避免换页时溢到下一节页首
+\usepackage{tabularx}   % 表格自动换行，防内容冲出纸边
+\usepackage{float}      % [H]：强制浮动体原地，用于节内首个浮动体（否则会被拉到本页顶部压住大标题）
+\usepackage{longtable}  % 超过一页高的大表（tab:config）用，可原地起排并自然跨页
+\captionsetup{font=small,labelfont=bf}
+\graphicspath{{figs/}}
+
+% ---- 草稿期标记 ----
+\newcommand{\pending}[1]{\textcolor{red}{\textbf{[待补：#1]}}}
+\newcommand{\draftnote}[1]{\textcolor{blue!70!black}{\small #1}}
+\newcommand{\bits}{\ensuremath{\,\mathrm{bit/byte}}}
+\newcommand{\nats}{\ensuremath{\,\mathrm{nat}}}
+
+% ---- 版式（2026-10-23）：每个大标题另起一页，标题位于页首 ----
+% 中标题/小标题不拆页。FloatBarrier 先把上一节遗留的浮动图表锁在本节内，
+% 再换页，避免图表溢到新节页首把标题顶下去。
+\let\origsection\section
+\renewcommand{\section}{\FloatBarrier\clearpage\origsection}
+
+\title{\textbf{State Is All You Need}\\[4pt]
+\large ——以中型 byte 级有状态语言模型 Gridman/Ouro 为对象的实证研究（初稿）}
+\author{作者列表 \pending{待填}\\[2pt]
+\small 单位 / 通讯作者 \pending{待填}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\parbox{0.94\linewidth}{\small
+\textbf{本文状态（草稿，投稿前请先读这一段）}
+\begin{itemize}\itemsep2pt
+\item 所有数字来自\textbf{单一检查点}：\texttt{gridman\_medium\_v\_0d3\_pretrain}，step 144000/705600，即训练进度\textbf{约 20\%}。
+      模型行为描述以现行实现 \textbf{v\_0d4} 为准（memory 改为序列级私有槽位，两版存档不兼容；
+      $\mathrm{batch}=1$ 推理两版逐位对应，见 \S\ref{sec:model} 表 \ref{tab:version}）。
+      因此本文只做\textbf{条件间的相对比较}，任何绝对值（如 1.08\bits）都\textbf{不可}与外部模型对照。加验证集、训完 medium、
+      补同预算基线（\S\ref{sec:b3}）之前，本稿不可当作最终结果。
+\item 已完成并可报：A1/A2/A3/A5/A6（第 \ref{sec:s1} 章）、B1-lite/B2/B2-freeze（第 \ref{sec:s2} 章）、
+      以及稳定性与状态性质（附录 \ref{app:cline}、\ref{app:dline}）。
+\item \textbf{未完成}：A4（状态错配）、B3（等效滑窗基线）、B4（needle 预实验）、F 线（重训类）。
+      正文中未完成处一律以 \pending{} 标出，不预留空节。
+\item \textbf{已作废}：受控遗忘曲线（C1）因实现缺陷（答案位置整体偏移，实际在测补白字节）作废，
+      不从正文引用；完整说明见附录 \ref{app:c1}。
+\end{itemize}}}
+\end{center}
+
+\input{sections/00-abstract}
+
+\input{sections/01-intro}
+\input{sections/02-related}
+\input{sections/03-model}
+\input{sections/04-protocol}
+\input{sections/05-s1}
+\input{sections/06-s2}
+\input{sections/07-discussion}
+\input{sections/08-limitations}
+
+\appendix
+% 附录 A–F 连续排布，不再每个大标题换页（正文 1–8 仍换页）。
+\let\section\origsection
+\input{sections/09-appendix}
+
+\clearpage  % 参考文献单独成页
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

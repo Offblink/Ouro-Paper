@@ -1,0 +1,52 @@
+% 7.1 汇总表：子主张 × 证据 × 图表 × 判定
+\begin{table}[H]
+\centering
+\caption{S1 / S2 的判定汇总。每个判定句都由对应小节的末句直接给出，可逐条回查。}
+\label{tab:summary}
+\small
+\begin{tabular}{@{}p{0.10\linewidth}p{0.30\linewidth}p{0.43\linewidth}p{0.10\linewidth}@{}}
+\toprule
+子主张 & 证据（实验） & 关键数字 & 判定 \\
+\midrule
+S1（有没有） &
+A1 热启动 vs 空白 &
+同窗口 $1.588$ vs $5.319\bits$（差 $+3.731$），窗口内无收敛趋势 &
+\textbf{成立} \\
+\addlinespace[2pt]
+S1（有没有） &
+A2 写入 vs $\mathit{lock}$ &
+成对差 $+0.999\pm0.095\bits$；差值前段 $0.585\to$ 后段 $0.771\nats$ &
+\textbf{成立} \\
+\addlinespace[2pt]
+S1（谁承载） &
+A5 单组件重置 / A6 冻结 / B2-freeze &
+冻结 \texttt{recurrent} $+1.022\bits$（$\approx$ 全锁 $+1.034$）；冻结 \texttt{memory} $-0.0005$；
+边界冲击 $0.378/0.450\nats$ &
+跨 patch 适应由 \texttt{recurrent} 承载 \\
+\addlinespace[2pt]
+S2（有多少） &
+B1-lite + E5 重置频率 &
+96/512\,KB 漂移无尖峰；重置周期 $512\to\infty$：$1.2147\to1.0385\bits$ 单调 &
+长度非瓶颈 \\
+\addlinespace[2pt]
+S2（有多少） &
+B2 距离分桶 + B2-freeze &
+$<\!1$k 增益 $+0.0839\nats$（9384 对），$4$k 外 $\approx0$；冻结 \texttt{recurrent} 抹平增益 &
+\textbf{有效记忆 $\approx1$--$4$k token} \\
+\addlinespace[2pt]
+S2（折算窗口） &
+B3 等效滑窗基线 &
+\pending{未完成} &
+待定 \\
+\addlinespace[2pt]
+边界能力 &
+B4 needle 预实验 / G1 合成绑定 &
+合成键值对绑定弱（$8.3$--$8.6$ bits $\approx$ 机会线） & 限定 claim（\S\ref{sec:limits}） \\
+\midrule
+评测去污染 &
+D2b 成员推断 &
+状态级样本记忆 $-0.714\bits$；热启动 train gap $-0.350\pm0.200$，空白 $+0.365\pm0.828$ &
+\textbf{主表须双报起点状态} \\
+\bottomrule
+\end{tabular}
+\end{table}

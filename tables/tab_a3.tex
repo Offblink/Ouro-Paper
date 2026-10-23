@@ -1,0 +1,24 @@
+% A3 + A5：文档边界与单组件重置
+\begin{table}[t]
+\centering
+\caption{A3 跨文档边界（16 篇文档 $\times$ 3072\,B $=$ 768 patch、15 个边界）与 A5 单组件重置。
+冲击 $=$ 边界后 2 个 patch 的平均 NLL 相对边界前 8 个 patch 基线的增量；
+恢复长度 $=$ 回落到「基线 $+0.5$\,nats」以内所需的 patch 数。
+连续条件无重置点，故不给冲击/恢复。}
+\label{tab:a3}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+条件 & bits/byte & 后段 NLL (nats) & 边界冲击 (nats) & 恢复（中位 / 最大） \\
+\midrule
+continuous（不重置） & $1.1032$ & $0.7711$ & --- & --- \\
+reset\_full（全部重置） & $1.1281$ & $0.7903$ & $+0.4504$ & $1 / 2$ \\
+reset \texttt{recurrent} & $1.1241$ & $0.7875$ & $+0.3779$ & $1 / 2$ \\
+reset \texttt{memory} & $1.1029$ & $0.7709$ & $+0.0246$ & $0 / 1$ \\
+reset \texttt{queue}$+$\texttt{MTM} & $1.1026$ & $0.7708$ & $+0.0250$ & $0 / 1$ \\
+\midrule
+\multicolumn{5}{@{}l}{跨文档增益（continuous $-$ reset\_full，后 14 篇）：$-0.0192$\,nats；
+\ \ \texttt{recurrent} 解释边界冲击的 $84\%$} \\
+\bottomrule
+\end{tabular}
+\end{table}

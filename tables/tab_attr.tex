@@ -1,0 +1,33 @@
+% A6 + B2-freeze：组件归因
+\begin{table}[t]
+\centering
+\caption{组件级归因：两种互补干预在同一份同分布文本上的结果。
+（a）A6 冻结（16\,KB，seed $\in\{0,1\}$）：基线为全部正常写入；
+（b）B2-freeze（96\,KB，单条流）在自然重复任务上的 $<\!1$k 桶复现增益。
+两组的结论一致：代价几乎全部落在 \texttt{recurrent} 上，矩阵记忆与队列 $+$ MTM 无损失。}
+\label{tab:attr}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\multicolumn{3}{@{}l}{\textbf{(a) A6 冻结单分量（16\,KB，2 seed）}} \\
+\midrule
+条件 & bits/byte（均值） & $\Delta$ vs 全部写入 \\
+\midrule
+write（全部写入，基线） & $1.386$ & $0$ \\
+lock（冻结全部写入） & $2.420$ & $+1.034$ \\
+freeze \texttt{recurrent} & $2.408$ & $\mathbf{+1.022}$ \\
+freeze \texttt{memory} & $1.386$ & $-0.0005$ \\
+freeze \texttt{queue}$+$\texttt{MTM} & $1.386$ & $+0.0002$ \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{(b) B2-freeze：自然重复的 $<\!1$k 桶复现增益（nats，96\,KB）}} \\
+\midrule
+条件 & bits/byte & $<\!1$k 桶增益 \\
+\midrule
+write & $1.0838$ & $+0.0839$ \\
+lock（全程只读） & $2.1641$ & $-0.0050$ \\
+freeze \texttt{recurrent} & $2.1527$ & $\mathbf{-0.0043}$ \\
+freeze \texttt{memory} & $1.0836$ & $+0.0840$ \\
+freeze \texttt{queue}$+$\texttt{MTM} & $1.0832$ & $+0.0837$ \\
+\bottomrule
+\end{tabular}
+\end{table}

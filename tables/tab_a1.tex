@@ -1,0 +1,26 @@
+% A1：热启动 vs 空白起步（对齐计分窗口）
+\begin{table}[t]
+\centering
+\caption{A1 热启动 vs 空白起步。文本为 \texttt{sft.jsonl} 尾部 4097 字节（跨域、零污染），
+所有条件记分窗口相同（第 16--63 个 patch，共 48 个 patch $=$ 3\,KB）。
+「预热」档在对齐窗口上数值逐位相同（最大差 $0.000\mathrm{e}{+}0$），故不是有效变量；
+最后一行给出未对齐窗口时的数值，两者相差的 $0.35\bits$ 纯属窗口效应。}
+\label{tab:a1}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+条件 & 起点状态 & 计分窗口 & bits/byte \\
+\midrule
+热启动（hot） & 训练稳态快照 & 48 patch（对齐） & $\mathbf{1.588}$ \\
+空白（blank） & 恒等 memory $+$ 零其余 & 48 patch（对齐） & $5.319$ \\
+空白 $+$ 预热 256 & 同上（同一轨迹） & 48 patch（对齐） & $5.319$ \\
+空白 $+$ 预热 1024 & 同上（同一轨迹） & 48 patch（对齐） & $5.319$ \\
+\midrule
+\multicolumn{2}{@{}l}{热启动 $-$ 空白（对齐窗口）} & 48 patch & $\mathbf{+3.731}$ \\
+\midrule
+热启动（未对齐） & 训练稳态快照 & 64 patch & $1.623$ \\
+空白 $+$ 预热 0（未对齐） & 恒等 memory $+$ 零其余 & 64 patch & $5.668$ \\
+空白 $+$ 预热 256（未对齐） & 同上 & 60 patch & $5.544$ \\
+\bottomrule
+\end{tabular}
+\end{table}

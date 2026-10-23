@@ -1,0 +1,62 @@
+\section*{摘要}
+\addcontentsline{toc}{section}{摘要}
+
+标准语言模型把历史信息的载体固定在上下文窗口里：窗口内的 token 可被注意力直接访问，窗口之外的历史要么不可见，
+要么必须以随长度增长的成本重新写回窗口。持续状态是另一种载体——一段形状固定的张量，跨上下文持续存在，
+在前向过程中被反复读写，其容量\textbf{不随历史长度增长}。本文把「固定大小的持续状态能承载多少跨上下文信息」
+作为可以用实验正面验证的经验问题，在一个 437.8M 参数的中型 byte 级有状态语言模型（Gridman/Ouro medium）上做系统测量。
+评测只使用训练到 20\%（step 144000/705600）的单一检查点，全程 teacher-forced、不做任何重训，
+并把操纵旋钮全部落在架构暴露的状态接口上：\textbf{起点状态}（热启动 / 空白）、\textbf{读写路径}（commit / lock）、
+\textbf{组件手术}（重置 / 冻结）。
+
+主要结果：（1）状态的跨上下文携带\textbf{成立}：在同一计分窗口下，热启动起点比失忆起点低
+$3.73\bits$（$1.59$ 对 $5.32$），且该差距在窗口内不收敛；锁定跨 patch 写入的代价是
+$+1.00\pm0.09\bits$，并在上下文增长时\textbf{累积}（后段 $0.77$ 对前段 $0.58\nats$）；
+跨文档边界重置造成 $+0.45\nats$ 的冲击，但中位数 1 个 patch 即自愈。
+（2）组件归因给出一个反直觉的结论：自然文本上的跨 patch 适应\textbf{几乎全部由块级循环状态（recurrent c\_state）承担}——
+冻结它等价于冻结全部写入（$+1.02$ 对 $+1.03\bits$），而冻结 delta 规则矩阵记忆（memory）的写入代价
+$\approx 0$（$-0.0005\bits$）；矩阵记忆的价值不在增量适应，而在\textbf{读取训练稳态先验}。
+（3）有效上下文\textbf{有限}：自然重复带来的复现增益集中在 $1$k token 以内（$+0.084\nats$），
+$4$k 之外衰减到零甚至转负；冻结 recurrent 会精确抹平该增益。这修正了「固定状态长程记忆 $\ge 256$K 不衰减」的初步结论
+（该结论源于一次分桶实现的缺陷，已作废重测）。
+（4）永续性侧的证据是正面的：$96$KB / $512$KB 连续写入下状态范数有界缓增
+（memory $\times1.02/\times1.13$、MTM $\times1.02/\times1.07$，STM/queue 恒定），
+重置频率扫描单调（$512\text{tok}\to\infty$：$1.215\to1.039\bits$），未见噪声累积。
+（5）一条必须写进评测协议的警示：热启动状态里含有\textbf{逐样本的训练痕迹}——
+在训练消费区文本上热启动的优势比未消费文本低 $0.35\pm0.20\bits$，且这一成分几乎全部由状态承载
+（去掉热启动后该差距消失：$+0.36\pm0.83$），因此主表必须\textbf{双报起步状态}。
+
+结论：固定大小的持续状态在这个规模上确实承载了可测的跨上下文信息与稳定的长时写入能力，
+但其\textbf{有效记忆距离约为 $1$–$4$k token}，与「永续上下文」的强主张尚有量级差距；
+且承载者主要是循环状态而非参数化矩阵记忆。本文同时给出未完成项（状态错配、等效滑窗基线、精确检索预实验）
+与已作废实验（受控遗忘曲线）的完整说明。
+
+\vspace{0.6em}
+\noindent\textbf{关键词：有状态语言模型；持续状态；固定大小记忆；delta 规则快权重；有效上下文；
+teacher-forced bits/byte；评测协议}
+
+\vspace{1.0em}
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+Standard language models carry history in the context window: tokens inside the window are directly
+attended to, while history outside it is either invisible or must be replayed at a cost that grows with
+length. A \emph{persistent state} is an alternative carrier---a fixed-shape tensor that exists across
+contexts, is read and written at every forward pass, and whose capacity does not grow with history
+length. We turn ``how much cross-context information can a fixed-size persistent state carry'' into an
+empirical question and measure it on a 437.8M-parameter byte-level stateful LM (Gridman/Ouro medium),
+using a single checkpoint at $20\%$ of training (step 144000/705600), teacher-forced evaluation, and no
+retraining. All control knobs are architecture-exposed state operations: the \emph{starting state}
+(hot start vs.\ blank), the \emph{read/write path} (commit vs.\ lock), and \emph{component surgery}
+(reset / freeze). We find that (i) cross-context carriage holds---on a common scoring window the hot
+start beats a blank start by $3.73$\,bits/byte ($1.59$ vs.\ $5.32$) with no convergence trend, and
+locking cross-patch writes costs $+1.00\pm0.09$\,bits/byte, growing with context length;
+(ii) cross-patch adaptation is almost entirely carried by the block-level recurrent state---freezing it
+costs as much as locking all writes ($+1.02$ vs.\ $+1.03$\,bits/byte), while freezing the global
+delta-rule matrix memory is free ($-0.0005$); (iii) the effective repetition memory is limited to about
+$1$--$4$k tokens; and (iv) the hot-start state contains sample-level training traces, so any main table
+must report both starting states.
+
+\vspace{0.6em}
+\noindent\textbf{Keywords:} stateful language model; persistent state; fixed-size memory; delta-rule fast
+weights; effective context; teacher-forced bits/byte

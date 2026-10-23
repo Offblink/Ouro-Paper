@@ -1,0 +1,32 @@
+% D1 / D2 / D2b：热启动记忆的性质
+\begin{table}[t]
+\centering
+\caption{D 线：热启动状态里装的是什么（4\,KB $\times$ 5 seed，95\% CI）。
+（a）D1 领域分解：gain $=$ 空白 $-$ 热启动，四档文本；
+（b）D2/D2b 成员推断：训练消费区 vs 未消费同分布文本，以及「去掉热启动」后的同一比较。
+热启动的收益主要是通用序列先验（跨域仍在），含少量同分布偏向；
+而\textbf{逐样本的训练痕迹几乎全部由状态承载}（去掉热启动后 train gap 消失）。}
+\label{tab:d1}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\multicolumn{4}{@{}l}{\textbf{(a) D1 四档文本（4\,KB $\times$ 5 seed）}} \\
+\midrule
+文本档 & 热启动 (bits/byte) & 空白 (bits/byte) & gain（空白 $-$ 热启动） \\
+\midrule
+同分布 held-out & $1.323\pm0.239$ & --- & $+5.061\pm0.580$ \\
+跨域（sft 尾部） & $1.681\pm0.081$ & --- & $+4.373\pm0.912$ \\
+同分布但字节打乱 & $11.901\pm0.463$ & --- & $-0.314\pm0.331$ \\
+零信息（全空格） & $0.236$ & --- & $+2.688$ \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{(b) D2 / D2b 成员推断}} \\
+\midrule
+条件 & 消费区 (bits/byte) & 未消费 (bits/byte) & gap（消费 $-$ 未消费） \\
+\midrule
+热启动（权重 $+$ 状态） & $0.973\pm0.173$ & $1.323\pm0.239$ & $-0.350\pm0.200$ \\
+空白（仅权重） & --- & --- & $+0.365\pm0.828$ \\
+\midrule
+\multicolumn{4}{@{}l}{状态级样本记忆 $=$ 热启动 gap $-$ 空白 gap $= \mathbf{-0.714}$ bits/byte} \\
+\bottomrule
+\end{tabular}
+\end{table}

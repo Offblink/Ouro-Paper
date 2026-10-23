@@ -1,0 +1,22 @@
+% A2：写入 vs 只读（lock）
+\begin{table}[t]
+\centering
+\caption{A2 写入 vs 只读（$\mathit{lock\_mem}$）。同分布零污染 held-out 16\,KB，
+三个 seed 为三份不同文本。主报\textbf{成对差值}（先算每份文本的差再平均），
+它剔除了文本难度差异；末两行为 seed 0 的逐 patch 差值演化，显示写入收益随上下文累积。}
+\label{tab:a2}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+seed（文本） & write (bits/byte) & lock (bits/byte) & 差值（lock $-$ write） \\
+\midrule
+0 & $1.661$ & $2.639$ & $+0.978$ \\
+1 & $1.111$ & $2.202$ & $+1.091$ \\
+2 & $1.971$ & $2.899$ & $+0.927$ \\
+\midrule
+均值 $\pm$ 95\% CI & $1.581\pm0.493$ & $2.580\pm0.399$ & $\mathbf{+0.999\pm0.095}$ \\
+\midrule
+\multicolumn{4}{@{}l}{seed 0 逐 patch 差值（nats）：前 32 patch $+0.585$；后 32 patch $+0.771$} \\
+\bottomrule
+\end{tabular}
+\end{table}
